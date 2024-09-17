@@ -1,84 +1,394 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Conversa no WhatsApp</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <!-- Definição do tipo de documento HTML5 -->
+    <meta charset="UTF-8"> <!-- Define a codificação de caracteres como UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ajuste de responsividade para dispositivos móveis -->
+    <title>Iniciar Conversa no WhatsApp</title> <!-- Título da página exibido na aba do navegador -->
+
+    <!-- Importação de fontes do Google: Poppins e Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- CSS externo da biblioteca intl-tel-input, usada para validação de números de telefone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/24.5.0/build/css/intlTelInput.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Estilos personalizados para a página -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        /* Variáveis CSS globais para uso consistente de cores, fontes e espaçamentos */
+        :root {
+            --primary-color: #25D366; /* Cor primária: verde do WhatsApp */
+            --secondary-color: #128C7E; /* Cor secundária: verde escuro */
+            --background-color: #f4f4f4; /* Cor de fundo */
+            --text-color: #333333; /* Cor principal do texto */
+            --border-color: #cccccc; /* Cor das bordas */
+            --font-family-base: 'Poppins', sans-serif; /* Fonte principal */
+            --font-family-heading: 'Playfair Display', serif; /* Fonte para títulos */
+            --error-color: #e74c3c; /* Cor para mensagens de erro */
+            --input-padding: 1rem; /* Espaçamento interno dos campos de entrada */
+            --button-padding: 1rem; /* Espaçamento interno dos botões */
+            --transition-duration: 0.3s; /* Duração das animações */
+            --max-container-width: 400px; /* Largura máxima do container principal */
+            --container-padding: 1.25rem; /* Espaçamento interno do container */
+            --container-margin: 0.625rem; /* Margem externa do container */
+            --font-size-base: 1rem; /* Tamanho da fonte principal */
+            --font-size-heading: 1.5rem; /* Tamanho da fonte para os títulos */
+            --border-radius: 0.5rem; /* Bordas arredondadas */
+            --box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra para o container */
+        }
+
+        /* Reset de estilos padrão e box-sizing para controle total dos espaçamentos */
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        /* Ativa o comportamento de rolagem suave */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Estilos do corpo da página, com fonte, cores e alinhamento */
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--background-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: var(--container-margin);
         }
-        .container {
+
+        /* Estilos do container principal, responsável por centralizar o conteúdo */
+        main {
             width: 100%;
-            max-width: 400px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: var(--max-container-width);
+            background-color: #ffffff;
+            padding: var(--container-padding);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
-        h1 {
-            color: #333;
-            font-size: 24px;
+
+        /* Cabeçalho da página, centralizado */
+        header {
             text-align: center;
-            margin-bottom: 20px;
         }
-        .iti--allow-dropdown {
+
+        /* Título principal com efeito de gradiente de cor */
+        header h1 {
+            font-family: var(--font-family-heading);
+            font-size: var(--font-size-heading);
+            background: linear-gradient(90deg, #25D366, #128C7E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        /* Estilos do formulário de entrada */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Estilos para os grupos de formulário, onde estão os campos de entrada */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Estilos dos rótulos (labels) dos campos de entrada */
+        label {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Estilos dos campos de entrada (input), como telefone */
+        input[type="tel"] {
             width: 100%;
+            padding: var(--input-padding);
+            padding-left: 3.5rem; /* Espaço reservado para a bandeira do país */
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            font-size: var(--font-size-base);
+            transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
         }
-        input, button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box; /* Added for better width control */
+
+        /* Efeitos visuais ao focar ou passar o mouse sobre o campo de entrada */
+        input[type="tel"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(37, 211, 102, 0.5);
+            outline: none;
         }
-        button {
-            background-color: #25D366;
-            color: white;
+
+        /* Estilos do botão de envio */
+        button[type="submit"] {
+            padding: var(--button-padding);
+            background: linear-gradient(90deg, #25D366, #128C7E);
+            color: #ffffff;
             border: none;
-            font-size: 16px;
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-base);
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
+            background-size: 200% 200%;
+            animation: gradientAnimation 3s ease infinite;
         }
-        button:hover {
-            background-color: #128C7E;
+
+        /* Animação de gradiente do botão de envio */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Efeito ao passar o mouse sobre o botão de envio */
+        button[type="submit"]:hover {
+            background: linear-gradient(90deg, #128C7E, #25D366);
+        }
+
+        /* Mensagem de erro exibida em caso de número de telefone inválido */
+        .error {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            display: none;
+            margin-top: 0.25rem;
+        }
+
+        /* Ajustes para o componente intl-tel-input (biblioteca de telefone) */
+        .intl-tel-input {
+            width: 100%;
+        }
+
+        /* Ajustes específicos para o campo de telefone do intl-tel-input */
+        .intl-tel-input input[type="tel"] {
+            padding-left: 3.5rem; /* Espaço reservado para a bandeira do país */
+        }
+
+        /* Alinhamento da bandeira do país no campo de telefone */
+        .intl-tel-input .selected-flag {
+            width: 3.5rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ajustes do campo de busca no seletor de países */
+        .iti__search {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Estilos do campo de busca no seletor de países */
+        .iti__search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            transition: border-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+        }
+
+        /* Efeito visual ao focar no campo de busca */
+        .iti__search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(37, 211, 102, 0.5);
+            outline: none;
+        }
+
+        /* Regras de responsividade para diferentes tamanhos de tela */
+        @media (max-width: 480px) {
+            /* Ajustes para telas menores */
+            :root {
+                --font-size-base: 0.95rem;
+                --font-size-heading: 1.25rem;
+                --input-padding: 0.75rem;
+                --button-padding: 0.75rem;
+                --container-padding: 1rem;
+                --max-container-width: 100%;
+            }
+
+            /* Ajuste de tamanho do título em telas pequenas */
+            header h1 {
+                font-size: var(--font-size-heading);
+            }
+
+            /* Ajustes para o campo de telefone em telas pequenas */
+            .intl-tel-input input[type="tel"] {
+                padding-left: 3rem;
+            }
+
+            .intl-tel-input .selected-flag {
+                width: 3rem;
+            }
+        }
+
+        /* Ajustes de layout para telas médias */
+        @media (min-width: 481px) and (max-width: 768px) {
+            :root {
+                --font-size-base: 1rem;
+                --font-size-heading: 1.4rem;
+                --input-padding: 0.875rem;
+                --button-padding: 0.875rem;
+                --container-padding: 1.125rem;
+            }
+
+            header h1 {
+                font-size: var(--font-size-heading);
+            }
+
+            .intl-tel-input input[type="tel"] {
+                padding-left: 3.25rem;
+            }
+
+            .intl-tel-input .selected-flag {
+                width: 3.25rem;
+            }
+        }
+
+        /* Ajustes de layout para telas grandes */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            :root {
+                --font-size-base: 1.05rem;
+                --font-size-heading: 1.45rem;
+                --input-padding: 1rem;
+                --button-padding: 1rem;
+                --container-padding: 1.25rem;
+            }
+
+            header h1 {
+                font-size: var(--font-size-heading);
+            }
+
+            .intl-tel-input input[type="tel"] {
+                padding-left: 3.5rem;
+            }
+
+            .intl-tel-input .selected-flag {
+                width: 3.5rem;
+            }
+        }
+
+        /* Ajustes para telas extra grandes */
+        @media (min-width: 1025px) {
+            :root {
+                --font-size-base: 1rem;
+                --font-size-heading: 1.5rem;
+                --input-padding: 1rem;
+                --button-padding: 1rem;
+                --container-padding: 1.25rem;
+            }
+
+            header h1 {
+                font-size: var(--font-size-heading);
+            }
+
+            .intl-tel-input input[type="tel"] {
+                padding-left: 3.5rem;
+            }
+
+            .intl-tel-input .selected-flag {
+                width: 3.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Iniciar Conversa no WhatsApp</h1>
-        <input id="phone" type="tel">
-        <button onclick="startWhatsAppConversation()">Iniciar Conversa</button>
-    </div>
+    <main>
+        <!-- Cabeçalho com título principal -->
+        <header>
+            <h1>Iniciar Conversa no WhatsApp</h1> <!-- Título da página -->
+        </header>
+        <form id="whatsappForm" novalidate> <!-- Formulário sem validação nativa do HTML5 -->
+            <div class="form-group">
+                <!-- Rótulo e campo de entrada para o número de telefone -->
+                <label for="phone">Número de Telefone</label>
+                <input 
+                    id="phone" 
+                    type="tel" 
+                    name="phone" 
+                    required 
+                    aria-required="true" 
+                    aria-describedby="phoneError" 
+                    placeholder="Digite seu número" 
+                    autocomplete="off" 
+                />
+                <!-- Mensagem de erro exibida caso o número de telefone seja inválido -->
+                <span id="phoneError" class="error">Por favor, insira um número de telefone válido.</span>
+            </div>
+            <!-- Botão de submissão do formulário -->
+            <button type="submit">Iniciar Conversa</button>
+        </form>
+    </main>
 
+    <!-- Importação da biblioteca intl-tel-input (versão 24.5.0) para campos de telefone -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/24.5.0/build/js/intlTelInput.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Utilitários da intl-tel-input para formatação e validação de números -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/24.5.0/build/js/utils.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Script personalizado para validação e submissão do formulário -->
     <script>
-        var input = document.querySelector("#phone");
-        var iti = window.intlTelInput(input, {
-            initialCountry: "br",
-            preferredCountries: ['br', 'us', 'gb'],
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // only load this when needed
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const phoneInput = document.querySelector("#phone"); // Campo de telefone
+            const phoneError = document.querySelector("#phoneError"); // Mensagem de erro
+            const whatsappForm = document.querySelector("#whatsappForm"); // Formulário principal
 
-        function startWhatsAppConversation() {
-            var phoneNumber = iti.getNumber();
-            if (iti.isValidNumber()) {
-                var whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber.replace(/\D/g, '')}`;
-                window.open(whatsappURL, '_blank');
-            } else {
-                alert("Por favor, insira um número de telefone válido.");
-            }
-        }
+            // Inicializa a biblioteca intl-tel-input com configurações específicas
+            const iti = window.intlTelInput(phoneInput, {
+                initialCountry: "br", // Define o país inicial como Brasil
+                preferredCountries: ['br', 'us', 'gb'], // Países preferidos no seletor
+                separateDialCode: true, // Exibe o código do país separado do número
+                nationalMode: false, // Permite a inserção do número completo (código + número)
+                autoPlaceholder: "aggressive", // Preenche automaticamente o placeholder com o formato adequado
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/24.5.0/build/js/utils.js", // Script de utilidades
+            });
+
+            // Função que valida o número de telefone
+            const isValidPhoneNumber = () => iti.isValidNumber();
+
+            // Função que reseta a exibição de erro
+            const resetError = () => {
+                phoneError.style.display = 'none';
+                phoneInput.setAttribute('aria-invalid', 'false');
+            };
+
+            // Função que exibe a mensagem de erro
+            const showError = () => {
+                phoneError.style.display = 'block';
+                phoneInput.setAttribute('aria-invalid', 'true');
+            };
+
+            // Validação em tempo real enquanto o usuário digita o número
+            phoneInput.addEventListener('input', () => {
+                if (phoneInput.value.trim()) {
+                    isValidPhoneNumber() ? resetError() : showError();
+                } else {
+                    phoneError.style.display = 'none';
+                    phoneInput.removeAttribute('aria-invalid');
+                }
+            });
+
+            // Evento de submissão do formulário
+            whatsappForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Previne o comportamento padrão de recarregamento da página
+                if (isValidPhoneNumber()) {
+                    const phoneNumber = iti.getNumber().replace(/\D/g, ''); // Obtém o número formatado
+                    const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}`; // Gera a URL do WhatsApp
+                    window.open(whatsappURL, '_blank'); // Abre o WhatsApp em uma nova aba
+                } else {
+                    showError(); // Exibe o erro se o número for inválido
+                }
+            });
+        });
     </script>
 </body>
 </html>
